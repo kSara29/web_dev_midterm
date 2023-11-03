@@ -1,8 +1,11 @@
-﻿namespace web_dev_midterm.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using web_dev_midterm.Enum;
+
+namespace web_dev_midterm.Models;
 
 public sealed class User: IdentityUser
 {
-    public byte[] Avatar { get; set; }
+    public byte[]? Avatar { get; set; }
     public string? Name { get; set; }
     public string? Description { get; set; }
     public string Password { get; set; }
@@ -14,7 +17,7 @@ public sealed class User: IdentityUser
     public User(
         string login,
         string email,
-        byte[] avatar,
+        byte[]? avatar,
         string password,
         string? name = null,
         string? description = null,

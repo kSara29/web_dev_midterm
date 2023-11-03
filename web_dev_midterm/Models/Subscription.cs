@@ -1,6 +1,22 @@
-﻿namespace web_dev_midterm.Models;
+﻿using web_dev_midterm.Models.Common;
 
-public class Subscription
+namespace web_dev_midterm.Models;
+
+public class Subscription: Entity
 {
+    public string TargetUserId { get; }
+    public User? TargetUser { get; set; }
     
+    public string SubscriberId { get; }
+    public User? Subscriber { get; set; }
+
+    public Subscription(
+        string targetUserId, 
+        string subscriberId)
+    {
+        TargetUserId = targetUserId;
+        SubscriberId = subscriberId;
+    }
+    
+    private Subscription(){}
 }
