@@ -10,13 +10,13 @@
     <div class="container" style="display: flex; justify-content: center;">
         <div class="col-md-3">
             <img src="data:image/jpeg;base64, 
-                @Model.Avatar" alt="User Avatar" style="border-radius: 50%;">
+                @Model.Avatar" alt="User Avatar" style="border-radius: 50%;width: 200px;height: 200px;">
         </div>
         
         <div class="col-md-8" style="display: flex; align-items: flex-start; flex-direction: column;">
             <div><p class="display-4"> @Model.UserName</p></div>
             <div style="display: flex">
-                <p> @Model.PostCount публикаций</p>
+                <p> @Model.PostCount постов</p>
                 <p style="margin-left: 15px"> @Model.FollowerCount подписчиков</p>
                 <p style="margin-left: 15px"> @Model.FollowingCount подписок</p>
             </div>
@@ -46,7 +46,7 @@
             else
             {
                 <form method="get" asp-controller="Post" asp-action="Add">
-                     <button type="submit" class="btn btn-secondary"> Добавить изображение </button>
+                     <button type="submit" class="btn btn-secondary"> Добавить пост </button>
                 </form>
             }
         </div>
@@ -57,7 +57,11 @@
                 @foreach (var post in Model.Posts)
                 {
                     <a style="width: auto" href="@Url.Action("Details", "Post", new { postId =  post.Id})">
-                        
+                        <div class="card">
+                            <div class="card-body">
+                                @post.Description
+                            </div>
+                        </div>
                     </a>
                 }
             </div>

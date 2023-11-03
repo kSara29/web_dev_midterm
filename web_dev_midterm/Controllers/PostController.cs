@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using web_dev_midterm.Models;
 using web_dev_midterm.Persistence;
 using web_dev_midterm.ViewModels.Home;
+using web_dev_midterm.ViewModels.Post;
 
 namespace web_dev_midterm.Controllers;
 
@@ -37,19 +38,8 @@ public class PostController: Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
             return NotFound();
-        
-        byte[] imageData = null;
-        
-        if (model.Image.Length > 0)
-        {
-            using (var binaryReader = new BinaryReader(model.Image.OpenReadStream()))
-            {
-                imageData = binaryReader.ReadBytes((int)model.Image.Length);
-            }
-        }
 
         Post? post = new Post(
-            imageData,
             model.Description,
             user.Id
         );
