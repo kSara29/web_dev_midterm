@@ -19,12 +19,14 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Post" asp-action="Add">Добавить пост</a>
-                    </li>
-                </ul>
+                    
+                <form class="d-flex" role="search" id="user-search-form" method="post" asp-controller="User" asp-action="Search">
+                    <input class="form-control me-2" type="search" id="user-search-input" name="keyword" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
             </div>
+            
             <div class="login_group">
                 @if(User.Identity.IsAuthenticated)
                 {

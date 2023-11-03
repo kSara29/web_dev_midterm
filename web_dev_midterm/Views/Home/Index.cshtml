@@ -1,10 +1,82 @@
 ﻿@model web_dev_midterm.ViewModels.Home.HomeVm
 @{
-    ViewData["Title"] = "Home / X";
+    ViewData["Title"] = "Home Page";
+    Layout = "_Layout";
 }
 
-<div class="container">
-    <div>
-        
+<div>
+    <div class="container">
+        @foreach (var post in @Model.Posts)
+        {
+            <div class="card" style="margin-bottom: 30px">
+                <div style="display: flex; flex-direction: column" >
+                    <div style="padding-left: 10px; height: 60px; display: flex;flex-direction: row;
+                                align-items: center;">
+                        <img src="data:image/jpeg;base64, @Convert.ToBase64String(post.User.Avatar)"
+                             alt="User Avatar" style="border-radius: 50%; height: 45px; width: 45px; margin-right: 20px">
+                        <p style="font-size: 18px; font-weight: 500; margin: 0px"> @post.User.UserName</p>
+                    </div>
+                    <div style="display: flex;justify-content: center;align-items: center;"
+                         class="card">
+                    </div>
+                    <div style="padding: 10px">
+                        <form method="post" asp-controller="Home" asp-action="Index" asp-route-postId="@post.Id">
+                            @if (post.Likes.Count > 0)
+                            {
+                                @foreach (var like in post.Likes)
+                                {
+                                    if (like.UserId == Model.CurrentUserId && like.PostId == post.Id)
+                                    {
+                                        Model.Liked = true;
+                                    }
+                                }
+                                if (Model.Liked)
+                                {
+                                    <button type="submit" class="btn btn-outline-danger"> Не нравится </button>
+                                    Model.Liked = false;
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-outline-success"> Нравится </button>
+                                    Model.Liked = false;
+                                }
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-outline-success"> Нравится</button>
+                            }
+                        </form>
+                    </div>
+                    <div>
+                        <p style="padding-left:11px; margin:0px; font-size: 18px; font-weight: 500"> @post.Likes.Count отметок "Нравится"</p>
+                    </div>
+                    <div style="padding-left:11px; padding-top:5px">
+                        <p style="font-size: 18px;">
+                            <span style="font-weight: bold;">@post.User.UserName</span>
+                            @post.Description
+                        </p>
+                    </div>
+                    <div class="input-group">
+                        <form method="post" asp-controller="Home" asp-action="Index" 
+                              asp-route-postId = "@post.Id"
+                              style="display: flex;width: 100%">
+                            <input asp-for="UserComment" 
+                                   style="height:55px" type="text" 
+                                   class="form-control" placeholder="Добавьте комментарий..."
+                                   aria-label="Recipient's username" aria-describedby="basic-addon2"
+                                   autocomplete="off"  id="commentInput">
+                            <button class="btn btn-dark">Опубликовать</button>
+                        </form>
+                    </div>
+                    @if (post.Comments.Count > 0)
+                    {
+                        @foreach (var comment in post.Comments)
+                        {
+                            <p style="font-size: 18px; margin: 0px; padding-left: 20px; padding-top: 5px"> @comment.User.UserName: @comment.Comment</p>
+                        }
+                    }
+                </div>
+            </div>
+        }
     </div>
 </div>
