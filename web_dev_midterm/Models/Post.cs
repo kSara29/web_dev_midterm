@@ -4,7 +4,6 @@ namespace web_dev_midterm.Models;
 
 public sealed class Post: Entity
 {
-    public byte[] Image { get; }
     public string Description { get; }
     public DateTime CreatedAt { get; set; }
     public List<Like> Likes { get; set; } = new();
@@ -14,12 +13,10 @@ public sealed class Post: Entity
     public User? User { get; set; }
     
     public Post(
-        byte[] image,
         string description,
         string userId
     )
     {
-        Image = image;
         Description = description;
         UserId = userId;
         CreatedAt = DateTime.UtcNow;

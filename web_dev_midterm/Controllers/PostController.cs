@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using web_dev_midterm.Models;
@@ -8,35 +7,69 @@ using web_dev_midterm.ViewModels.Home;
 
 namespace web_dev_midterm.Controllers;
 
-public class HomeController : Controller
+public class PostController: Controller
 {
-    private readonly ILogger<HomeController> _logger;
     private readonly AppDbContext _db;
     private readonly UserManager<User> _userManager;
+    private readonly SignInManager<User> _signInManager;
 
-    public HomeController(AppDbContext db, 
-        UserManager<User> userManager,
-        ILogger<HomeController> logger)
+    public PostController(AppDbContext db, 
+        UserManager<User> userManager, 
+        SignInManager<User> signInManager)
     {
-        _logger = logger;
         _db = db;
         _userManager = userManager;
+        _signInManager = signInManager;
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public IActionResult Add()
     {
-        var user = await _userManager.GetUserAsync(User);
+        return View();
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> Add(PostAddVm model)
+    {
+        if (!ModelState.IsValid)
+            return View();
         
-        var followingList = _db.Subscriptions.Where(s => s.SubscriberId == user.Id)
-            .Select(s => s.TargetUserId)
-            .ToList();
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+            return NotFound();
+        
+        byte[] imageData = null;
+        
+        if (model.Image.Length > 0)
+        {
+            using (var binaryReader = new BinaryReader(model.Image.OpenReadStream()))
+            {
+                imageData = binaryReader.ReadBytes((int)model.Image.Length);
+            }
+        }
 
-        var posts = _db.Posts.Where(p => followingList.Contains(p.UserId))
-            .OrderByDescending(p => p.CreatedAt)
+        Post? post = new Post(
+            imageData,
+            model.Description,
+            user.Id
+        );
+        
+        await _db.Posts.AddAsync(post);
+        await _db.SaveChangesAsync();
+
+        return RedirectToAction("Profile", "User", new { userId = user.Id });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Details(long postId)
+    {
+        //var userProfileId = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        var posts = _db.Posts.Where(p => p.Id == postId)
             .Include(p => p.User)
-            .Include(p => p.Comments.OrderByDescending(c => c.CreatedAt))
             .Include(p => p.Likes)
+            .Include(p => p.Comments.OrderByDescending(c => c.CreatedAt))
             .ToList();
         
         foreach (var post in posts)
@@ -48,10 +81,10 @@ public class HomeController : Controller
                     .Load();
             }
         }
-
+        
         var vm = new HomeVm
         {
-            CurrentUserId = user.Id,
+            CurrentUserId = currentUser.Id,
             Posts = posts
         };
 
@@ -59,8 +92,9 @@ public class HomeController : Controller
     }
     
     [HttpPost]
-    public async Task<IActionResult> Index(HomeVm vm, long postId)
+    public async Task<IActionResult> Details(HomeVm vm, long postId)
     {
+        //var userProfile = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId);
         var user = await _userManager.GetUserAsync(User);
         var like = new Like(user.Id, postId);
         
@@ -80,21 +114,14 @@ public class HomeController : Controller
         {
             _db.Likes.Remove(likeCheck);
             await _db.SaveChangesAsync();
-            check = false;
         }
         else
         {
             await _db.Likes.AddAsync(like);
             await _db.SaveChangesAsync();
-            check = true;
         }
         
-        var followingList = _db.Subscriptions.Where(s => s.SubscriberId == user.Id)
-            .Select(s => s.TargetUserId)
-            .ToList();
-
-        var posts = _db.Posts.Where(p => followingList.Contains(p.UserId))
-            .OrderByDescending(p => p.CreatedAt)
+        var posts = _db.Posts.Where(p => p.Id == postId)
             .Include(p => p.User)
             .Include(p => p.Comments.OrderByDescending(c => c.CreatedAt))
             .Include(p => p.Likes)
@@ -115,19 +142,7 @@ public class HomeController : Controller
             CurrentUserId = user.Id,
             Posts = posts
         };
-
+        
         return View(vm);
-    }
-
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

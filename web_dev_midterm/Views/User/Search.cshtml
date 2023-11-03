@@ -1,0 +1,26 @@
+﻿@model List<web_dev_midterm.ViewModels.User.UserSearchResultVm>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>Результаты поиска пользователей</h2>
+
+@if (Model.Count == 0)
+{
+    <p>Пользователи не найдены.</p>
+}
+else
+{
+    <ul>
+        @foreach (var user in Model)
+        {
+            <li>
+                <a asp-controller="User" asp-action="Profile" asp-route-userId="@user.Id">
+                    <p class="display-6" style="font-size: 40px;color: black;"> @user.UserName </p>
+                </a>
+            </li>
+        }
+    </ul>
+}
