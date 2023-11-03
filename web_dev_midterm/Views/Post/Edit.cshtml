@@ -1,0 +1,21 @@
+﻿@model web_dev_midterm.ViewModels.Post.PostEditVm
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <form method="post" asp-controller="Post" asp-action="EditPost" asp-route-postId="@Model.Id" asp-route-userId="@Model.targetUser">
+            <div asp-validation-summary="ModelOnly"></div>
+            <div class="row mb-3">
+                <label asp-for="Description" for="description" class="form-label">Описание</label>
+                <textarea asp-for="Description" class="form-control" id="description" rows="3" name="comment"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary"> Редактировать </button>
+        </form>
+    </div>
+</div>

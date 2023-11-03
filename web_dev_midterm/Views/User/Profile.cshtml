@@ -56,7 +56,9 @@
             <div class="row">
                 @foreach (var post in Model.Posts)
                 {
-                    <a style="width: auto" href="@Url.Action("Details", "Post", new { postId =  post.Id})">
+                    <a asp-controller="Post" asp-action="Details"
+                       asp-route-postId="@post.Id"
+                       asp-route-userId="@Model.TargetId" style="width: auto">
                         <div class="card">
                             <div class="card-body">
                                 @post.Description

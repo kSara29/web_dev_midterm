@@ -4,7 +4,7 @@ namespace web_dev_midterm.Models;
 
 public sealed class Post: Entity
 {
-    public string Description { get; }
+    public string Description { get; set; }
     public DateTime CreatedAt { get; set; }
     public List<Like> Likes { get; set; } = new();
     public List<PostComment> Comments { get; set; } = new();

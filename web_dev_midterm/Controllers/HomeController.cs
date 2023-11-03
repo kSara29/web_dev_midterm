@@ -27,8 +27,6 @@ public class HomeController : Controller
     public async Task<IActionResult> Index()
     {
         var user = await _userManager.GetUserAsync(User);
-        if (user is null)
-            return RedirectToAction("Login", "User");
         
         var followingList = _db.Subscriptions.Where(s => s.SubscriberId == user.Id)
             .Select(s => s.TargetUserId)
@@ -50,6 +48,8 @@ public class HomeController : Controller
                     .Load();
             }
         }
+        
+        
 
         var vm = new HomeVm
         {
@@ -120,6 +120,7 @@ public class HomeController : Controller
 
         return View(vm);
     }
+
 
 
     public IActionResult Privacy()

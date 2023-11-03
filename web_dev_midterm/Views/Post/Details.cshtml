@@ -48,6 +48,18 @@
                             {
                                 <button type="submit" class="btn btn-outline-success"> Нравится</button>
                             }
+                            @if (@Model.SourceId == @Model.TargetId)
+                            {
+                                <div style="display: flex; width: 100%; justify-content: flex-end;">
+                                    <button formmethod="get" type="submit" asp-action="Edit" asp-controller="Post" asp-route-postId="@post.Id"
+                                            asp-route-userId="@Model.TargetId"
+                                            class="btn btn-warning"
+                                            style="margin-right: 7px"> Редактировать</button>
+                                    
+                                    <button type="submit" asp-controller="Post" asp-action="Delete" asp-route-postId="@post.Id"
+                                            class="btn btn-danger"> Удалить </button>
+                                </div>
+                            }
                         </form>
                     </div>
                     <div style="padding-left:11px; padding-top:5px">
@@ -80,3 +92,35 @@
         }
     </div>
 </div>
+
+@*
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            $('.like-button').click(function () {
+                var postId = $(this).data('post-id');
+                
+                $.post("/Post/Details", { postId: postId }, function (data) {
+                    location.reload();
+                });
+            });
+            
+           /* $('#deletePost').click(function () {
+                var postId = $(this).data('post-id');
+                
+                $.post("/Post/Delete", { postId: postId }, function (data) {
+                    location.reload();
+                });
+            });*/
+            
+            $('#editPost').click(function () {
+                var postId = $(this).data('post-id');
+                var targetUser = $(this).data('target-user');
+                
+                window.location.href = "/Post/Edit?postId=" + postId+ "&userId=" + targetUser;
+            });
+        });
+    </script>
+}
+*@
